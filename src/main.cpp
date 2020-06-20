@@ -26,6 +26,8 @@
 #include <hal/nrf_wdt.h>
 #include <host/util/util.h>
 #include <services/gap/ble_svc_gap.h>
+#include <drivers/include/nrfx_twi.h>
+#include <drivers/TwiMaster.h>
 
 
 #if NRF_LOG_ENABLED
@@ -42,6 +44,12 @@ static constexpr uint8_t pinSpiMiso = 4;
 static constexpr uint8_t pinSpiFlashCsn = 5;
 static constexpr uint8_t pinLcdCsn = 25;
 static constexpr uint8_t pinLcdDataCommand = 18;
+static constexpr uint8_t pinTwiScl = 7;
+static constexpr uint8_t pinTwiSda = 6;
+
+static constexpr uint8_t touchPanelTwiAddress = 0x15;
+static constexpr uint8_t motionSensorTwiAddress = 0x18;
+
 
 Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
         Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
@@ -55,10 +63,23 @@ Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, 
 
 Pinetime::Drivers::Spi lcdSpi {spi, pinLcdCsn};
 Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
-
 Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
-Pinetime::Drivers::Cst816S touchPanel {};
+
+nrfx_twi_t twiInstance = NRFX_TWI_INSTANCE(1);
+nrfx_twi_config_t twiConfig {
+.scl = pinTwiScl,
+.sda = pinTwiSda,
+.frequency = NRF_TWI_FREQ_400K,
+.interrupt_priority = NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY,
+.hold_bus_uninit = NRFX_TWI_DEFAULT_CONFIG_HOLD_BUS_UNINIT
+};
+Pinetime::Drivers::TwiMaster twiMaster{
+        twiInstance,
+        twiConfig
+};
+
+Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 
@@ -212,7 +233,7 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, touchPanel, lvgl, batteryController, bleController,
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
                                                     dateTimeController, notificationManager));
   systemTask->Start();
   nimble_port_init();

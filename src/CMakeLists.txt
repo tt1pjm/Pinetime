@@ -343,6 +343,7 @@ list(APPEND SOURCE_FILES
   drivers/Watchdog.cpp
   drivers/DebugPins.cpp
   drivers/InternalFlash.cpp
+  drivers/TwiMaster.cpp
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/Ble/NotificationManager.cpp
@@ -418,6 +419,7 @@ set(INCLUDE_FILES
   drivers/Watchdog.h
   drivers/DebugPins.h
   drivers/InternalFlash.h
+  drivers/TwiMaster.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/Ble/NotificationManager.h

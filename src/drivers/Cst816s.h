@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nrfx_twi.h>
+#include "TwiMaster.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -27,21 +28,19 @@ namespace Pinetime {
           bool isTouch = false;
         };
 
-        Cst816S() = default;
+        Cst816S(TwiMaster& twiMaster, uint8_t twiAddress);
         Cst816S(const Cst816S&) = delete;
         Cst816S& operator=(const Cst816S&) = delete;
         Cst816S(Cst816S&&) = delete;
         Cst816S& operator=(Cst816S&&) = delete;
 
         void Init();
-        void Probe();
         TouchInfos GetTouchInfo();
         void Sleep();
         void Wakeup();
       private:
         static constexpr uint8_t pinIrq = 28;
         static constexpr uint8_t pinReset = 10;
-        static constexpr uint8_t address = 0x15;
         static constexpr uint8_t lastTouchId = 0x0f;
         static constexpr uint8_t touchPointNumIndex = 2;
         static constexpr uint8_t touchMiscIndex = 8;
@@ -56,11 +55,8 @@ namespace Pinetime {
         static constexpr uint8_t gestureIndex = 1;
 
         uint8_t touchData[63];
-
-        // TODO TWI (i²C) should be created outside and injected into this class
-        // It will be needed when implementing other I²C devices
-        // (0x15 = touch, 0x18 = accelerometer, 0x44 = HR sensor)
-        nrfx_twi_t twi = NRFX_TWI_INSTANCE(1); // Use instance 1, because instance 0 is already used by SPI
+        TwiMaster& twiMaster;
+        uint8_t twiAddress;
     };
 
   }

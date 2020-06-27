@@ -36,8 +36,9 @@ I've tested this project on the actual PineTime hardware.
  * Digital watch face and 4 demo applications (spinning meter, analog gauche, push button and message box);
  * Watchdog (automatic reset in case of firmware crash) and reset support (push and hold the button for 7 - 10s);
  * BLE Notification support (still Work-In-Progress, [companion app](https://github.com/JF002/gobbledegook) needed);
- * Supported by companion app [Amazfish](https://openrepos.net/content/piggz/amazfish) (time synchronization and notifications are integrated).
+ * Supported by companion app [Amazfish](https://openrepos.net/content/piggz/amazfish) (time synchronization and notifications are integrated) and [Gadgetbridge (in developpment)](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf).
  * **[EXPERIMENTAL]** Firmware update (OTA) via BLE.
+ * Motion sensor (step counting and X/Y/Z graph)
 
 ## Documentation
 
@@ -255,3 +256,14 @@ On Linux:
   * `pair <MAC ADDRESS>`
   
 Note that the current firmware only advertise for the first 3 minutes. If you cannot connect after more than 3 minutes, try resetting the device (push the button and hold it for 7-10 seconds).
+
+#Credits
+I'm not working alone on this project. First, many people create PR for this projects. Then, there is the whole #pinetime community : a lot of people all around the world who are hacking, searching, experimenting and programming the Pinetime. We exchange our ideas, experiments and code in the chat rooms and forums.
+
+Here are some people I would like to highlight:
+
+* [Atc1441](https://github.com/atc1441) : He works on an [Arduino based firmware](https://github.com/atc1441/ATCwatch) for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
+* [Koen](https://github.com/bosmoment/) : He's working on a [firmware](https://github.com/bosmoment/PineTime-apps) based on RiotOS. He integrated similar libs than me : NimBLE, LittleVGL,... His help was invaluable too!
+* [Lup Yuen Lee](https://lupyuen.github.io/) : He is **everywhere** : he works on a [Rust firmware](https://github.com/lupyuen/pinetime-rust-mynewt), buils a MCUBoot based bootloader for the Pinetime, design a Flutter based companion app for smartphones and write [a](https://medium.com/@ly.lee/sneak-peek-of-pinetime-smart-watch-and-why-its-perfect-for-teaching-iot-81b74161c159?source=friends_link&sk=d9301466f5499bece3e7b638e99ec20d) [lot](https://medium.com/@ly.lee/building-a-rust-driver-for-pinetimes-touch-controller-cbc1a5d5d3e9?source=friends_link&sk=d8cf73fc943d9c0e960627d768f309cb) [of](https://medium.com/@ly.lee/openocd-on-raspberry-pi-better-with-swd-on-spi-7dea9caeb590?source=friends_link&sk=df399bfd913d3e262447d28aa5af6b63) [articles](https://medium.com/@ly.lee/debug-riot-os-on-pinetime-with-vscode-12f00c69c120?source=friends_link&sk=a836d511355876bf81855db9f1e94124) [about](https://lupyuen.github.io/pinetime-rust-mynewt/articles/dfutest) [the](https://lupyuen.github.io/pinetime-rust-mynewt/articles/mcuboot) [Pinetime](https://lupyuen.github.io/pinetime-rust-mynewt/articles/pinetime)!
+
+*If you feel like you should appear on this list, just get in touch with me or submit a PR :)* 

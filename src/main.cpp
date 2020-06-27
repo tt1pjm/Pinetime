@@ -221,6 +221,7 @@ void nimble_port_init(void) {
 }
 
 void nimble_port_ll_task_func(void *args) {
+  extern void ble_ll_task(void *);
   ble_ll_task(args);
 }
 }

@@ -28,6 +28,7 @@
 #include <services/gap/ble_svc_gap.h>
 #include <drivers/include/nrfx_twi.h>
 #include <drivers/TwiMaster.h>
+#include <drivers/Bma421.h>
 
 
 #if NRF_LOG_ENABLED
@@ -66,20 +67,12 @@ Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
 Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 
-nrfx_twi_t twiInstance = NRFX_TWI_INSTANCE(1);
-nrfx_twi_config_t twiConfig {
-.scl = pinTwiScl,
-.sda = pinTwiSda,
-.frequency = NRF_TWI_FREQ_400K,
-.interrupt_priority = NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY,
-.hold_bus_uninit = NRFX_TWI_DEFAULT_CONFIG_HOLD_BUS_UNINIT
-};
-Pinetime::Drivers::TwiMaster twiMaster{
-        twiInstance,
-        twiConfig
-};
-
+Pinetime::Drivers::TwiMaster twiMaster{Pinetime::Drivers::TwiMaster::Modules::TWIM1,
+                                       Pinetime::Drivers::TwiMaster::Parameters {
+                                               NRF_TWI_FREQ_250K, pinTwiSda, pinTwiScl}};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
+Pinetime::Drivers::Bma421 motionSensor{twiMaster, motionSensorTwiAddress};
+
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 
@@ -90,14 +83,20 @@ Pinetime::Controllers::DateTime dateTimeController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
+static constexpr uint8_t pinMotionIrq = 8;
 std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
 Pinetime::Controllers::NotificationManager notificationManager;
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
+  if(pin == pinMotionIrq) {
+    // TODO implement handler for motion irq
+    return;
+  }
+
   if(pin == pinTouchIrq) {
     systemTask->OnTouchEvent();
-    return ;
+    return;
   }
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -233,8 +232,10 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
-                                                    dateTimeController, notificationManager));
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash,
+          twiMaster, touchPanel, motionSensor,
+          lvgl, batteryController, bleController,
+          dateTimeController, notificationManager));
   systemTask->Start();
   nimble_port_init();
 

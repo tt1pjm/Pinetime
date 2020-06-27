@@ -23,13 +23,17 @@ void Cst816S::Init() {
   vTaskDelay(20);
   nrf_gpio_pin_set(pinReset);
   vTaskDelay(200);
+
+  // Wake the touchpanel up
+  uint8_t dummy;
+  twiMaster.Read(twiAddress, 0, &dummy, 1);
 }
 
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
-  twiMaster.Read(twiAddress, touchData, 63);
+  twiMaster.Read(twiAddress, 0, touchData, 63);
   auto nbTouchPoints = touchData[2] & 0x0f;
 
 //  uint8_t i = 0;

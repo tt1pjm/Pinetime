@@ -8,20 +8,31 @@ namespace Pinetime {
   namespace Drivers {
     class TwiMaster {
       public:
-        TwiMaster(const nrfx_twi_t& twi, const nrfx_twi_config_t& config);
-        TwiMaster(const TwiMaster&) = delete;
-        TwiMaster& operator=(const TwiMaster&) = delete;
-        TwiMaster(TwiMaster&&) = delete;
-        TwiMaster& operator=(TwiMaster&&) = delete;
+        enum class Modules { TWIM1 };
+        enum class Frequencies {Khz100, Khz250, Khz400};
+        struct Parameters {
+          uint32_t frequency;
+          uint8_t pinSda;
+          uint8_t pinScl;
+        };
+
+        TwiMaster(const Modules module, const Parameters& params);
 
         void Init();
-        void Probe();
+        void Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* buffer, size_t size);
+        void Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size);
 
-        void Read(uint8_t address, uint8_t* buffer, size_t size);
       private:
-        const nrfx_twi_t &twi;
-        const nrfx_twi_config_t &config;
+        void Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
+        void Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);
+        NRF_TWIM_Type* twiBaseAddress;
         SemaphoreHandle_t mutex;
+        const Modules module;
+        const Parameters params;
+        static constexpr uint8_t maxDataSize{8};
+        static constexpr uint8_t registerSize{1};
+        uint8_t internalBuffer[maxDataSize + registerSize];
+
     };
   }
 }

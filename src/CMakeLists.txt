@@ -344,6 +344,9 @@ list(APPEND SOURCE_FILES
   drivers/DebugPins.cpp
   drivers/InternalFlash.cpp
   drivers/TwiMaster.cpp
+  drivers/Bma421.cpp
+  drivers/Bma421_C/bma4.c
+  drivers/Bma421_C/bma423.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/Ble/NotificationManager.cpp
@@ -420,6 +423,11 @@ set(INCLUDE_FILES
   drivers/DebugPins.h
   drivers/InternalFlash.h
   drivers/TwiMaster.h
+  drivers/Bma421.h
+  drivers/Bma421/bma4.h
+  drivers/Bma421/bma4_defs.h
+  drivers/Bma421/bma423.h
+  drivers/Bma421/Wire.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/Ble/NotificationManager.h
@@ -430,7 +438,7 @@ set(INCLUDE_FILES
   Components/Ble/CurrentTimeClient.h
   Components/Ble/AlertNotificationClient.h
   Components/Ble/DfuService.h
-    drivers/Cst816s.h
+  drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
   libs/date/includes/date/tz.h

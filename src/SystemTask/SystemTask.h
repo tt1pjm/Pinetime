@@ -10,6 +10,7 @@
 #include <drivers/Watchdog.h>
 #include <Components/Ble/NimbleController.h>
 #include <drivers/SpiNorFlash.h>
+#include <drivers/Bma421.h>
 
 namespace Pinetime {
   namespace System {
@@ -21,7 +22,7 @@ namespace Pinetime {
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                   Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
+                   Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel, Drivers::Bma421& motionSensor,
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
@@ -44,6 +45,7 @@ namespace Pinetime {
         Pinetime::Drivers::SpiNorFlash& spiNorFlash;
         Pinetime::Drivers::TwiMaster& twiMaster;
         Pinetime::Drivers::Cst816S& touchPanel;
+        Pinetime::Drivers::Bma421& motionSensor;
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Controllers::Battery& batteryController;
         std::unique_ptr<Pinetime::Applications::DisplayApp> displayApp;
@@ -64,6 +66,7 @@ namespace Pinetime {
         static constexpr uint8_t pinLcdDataCommand = 18;
         static constexpr uint8_t pinButton = 13;
         static constexpr uint8_t pinTouchIrq = 28;
+        static constexpr uint8_t pinMotionIrq = 8;
 
         static void Process(void* instance);
         void Work();

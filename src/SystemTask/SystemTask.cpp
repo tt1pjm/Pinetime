@@ -25,13 +25,14 @@ void IdleTimerCallback(TimerHandle_t xTimer) {
 
 SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                       Drivers::TwiMaster& twiMaster,Drivers::Cst816S &touchPanel,
+                       Drivers::TwiMaster& twiMaster,Drivers::Cst816S &touchPanel, Drivers::Bma421& motionSensor,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::NotificationManager& notificationManager) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
-                       twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
+                       twiMaster{twiMaster}, touchPanel{touchPanel}, motionSensor{motionSensor},
+                       lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, spiNorFlash) {
@@ -70,8 +71,8 @@ void SystemTask::Work() {
   lcd.Init();
 
   twiMaster.Init();
-  twiMaster.Probe();
   touchPanel.Init();
+  motionSensor.Init();
   batteryController.Init();
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
@@ -103,6 +104,14 @@ void SystemTask::Work() {
   pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup;
 
   nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
+
+  nrf_gpio_cfg_sense_input(pinMotionIrq, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_Low);
+  pinConfig.skip_gpio_setup = true;
+  pinConfig.hi_accuracy = false;
+  pinConfig.is_watcher = false;
+  pinConfig.sense = (nrf_gpiote_polarity_t)NRF_GPIOTE_POLARITY_HITOLO;
+  pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup;
+  nrfx_gpiote_in_init(pinMotionIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
   idleTimer = xTimerCreate ("idleTimer", idleTime, pdFALSE, this, IdleTimerCallback);
   xTimerStart(idleTimer, 0);
@@ -168,6 +177,8 @@ void SystemTask::Work() {
         bleDiscoveryTimer--;
       }
     }
+
+    motionSensor.Process();
 
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);

@@ -17,6 +17,7 @@
 #include <DisplayApp/Screens/ScreenList.h>
 #include <Components/Ble/NotificationManager.h>
 #include <DisplayApp/Screens/FirmwareUpdate.h>
+#include <DisplayApp/Screens/Motion.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -25,7 +26,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
-                       Pinetime::Controllers::NotificationManager& notificationManager) :
+                       Pinetime::Controllers::NotificationManager& notificationManager,
+                       Controllers::MotionController& motionController) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -35,7 +37,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         touchPanel{touchPanel},
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
         systemTask{systemTask},
-        notificationManager{notificationManager} {
+        notificationManager{notificationManager},
+        motionController{motionController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
   modal.reset(new Screens::Modal(this));
@@ -171,8 +174,6 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::RunningState() {
-//  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
-
   if(!currentScreen->Refresh()) {
     currentScreen.reset(nullptr);
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
@@ -184,11 +185,11 @@ void DisplayApp::RunningState() {
         currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
         onClockApp = true;
         break;
-//      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
       case Apps::SysInfo: currentScreen.reset(new Screens::ScreenList(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
+      case Apps::Motion: currentScreen.reset(new Screens::Motion(this, motionController)); break;
     }
     nextApp = Apps::None;
   }

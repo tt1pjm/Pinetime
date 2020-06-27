@@ -16,7 +16,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "Soft\nversion", "App2", "Brightness", ""};
+static const char * btnm_map1[] = {"Meter", "Motion", "Clock", "\n", "Soft\nversion", "App2", "Brightness", ""};
 
 Tile::Tile(DisplayApp* app) : Screen(app) {
   modal.reset(new Modal(app));
@@ -117,7 +117,7 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
         tile->StartMeterApp();
         break;
       case 1:
-        tile->StartGaugeApp();
+        tile->StartMotionApp();
         break;
       case 2:
         tile->StartClockApp();
@@ -167,6 +167,11 @@ void Tile::StartMeterApp() {
 
 void Tile::StartGaugeApp() {
   app->StartApp(DisplayApp::Apps::Gauge);
+  running = false;
+}
+
+void Tile::StartMotionApp() {
+  app->StartApp(DisplayApp::Apps::Motion);
   running = false;
 }
 

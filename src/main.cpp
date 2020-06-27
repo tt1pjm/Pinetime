@@ -29,6 +29,7 @@
 #include <drivers/include/nrfx_twi.h>
 #include <drivers/TwiMaster.h>
 #include <drivers/Bma421.h>
+#include <Components/Motion/MotionController.h>
 
 
 #if NRF_LOG_ENABLED
@@ -80,6 +81,7 @@ TimerHandle_t debounceTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::DateTime dateTimeController;
+Pinetime::Controllers::MotionController motionController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
@@ -234,7 +236,7 @@ int main(void) {
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
   systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash,
-          twiMaster, touchPanel, motionSensor,
+          twiMaster, touchPanel, motionSensor, motionController,
           lvgl, batteryController, bleController,
           dateTimeController, notificationManager));
   systemTask->Start();

@@ -18,6 +18,7 @@
 #include <drivers/Watchdog.h>
 #include <DisplayApp/Screens/Modal.h>
 #include <Components/Ble/NotificationManager.h>
+#include <Components/Motion/MotionController.h>
 #include "TouchEvents.h"
 
 
@@ -39,11 +40,12 @@ namespace Pinetime {
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                    System::SystemTask &systemTask,
-                   Pinetime::Controllers::NotificationManager& notificationManager);
+                   Pinetime::Controllers::NotificationManager& notificationManager,
+                   Controllers::MotionController& motionController);
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness};
+        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness, Motion};
         void StartApp(Apps app);
 
         void SetFullRefresh(FullRefreshDirections direction);
@@ -81,6 +83,7 @@ namespace Pinetime {
         Controllers::BrightnessController brightnessController;
         std::unique_ptr<Screens::Modal> modal;
         Pinetime::Controllers::NotificationManager& notificationManager;
+        Controllers::MotionController& motionController;
     };
   }
 }

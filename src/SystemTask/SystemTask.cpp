@@ -25,13 +25,13 @@ void IdleTimerCallback(TimerHandle_t xTimer) {
 
 SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                       Drivers::TwiMaster& twiMaster,Drivers::Cst816S &touchPanel, Drivers::Bma421& motionSensor,
+                       Drivers::TwiMaster& twiMaster,Drivers::Cst816S &touchPanel, Drivers::Bma421& motionSensor, Controllers::MotionController& motionController,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::NotificationManager& notificationManager) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
-                       twiMaster{twiMaster}, touchPanel{touchPanel}, motionSensor{motionSensor},
+                       twiMaster{twiMaster}, touchPanel{touchPanel}, motionSensor{motionSensor}, motionController{motionController},
                        lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
@@ -76,7 +76,7 @@ void SystemTask::Work() {
   batteryController.Init();
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
-                                                          dateTimeController, watchdogView, *this, notificationManager));
+                                                          dateTimeController, watchdogView, *this, notificationManager, motionController));
   displayApp->Start();
 
   batteryController.Update();
@@ -118,7 +118,7 @@ void SystemTask::Work() {
 
   while(true) {
     uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 1000)) {
+    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 100)) {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
@@ -178,7 +178,8 @@ void SystemTask::Work() {
       }
     }
 
-    motionSensor.Process();
+    auto motionValues = motionSensor.Process();
+    motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
 
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);

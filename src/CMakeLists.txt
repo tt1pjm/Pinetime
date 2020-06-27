@@ -287,6 +287,8 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_bar.h
   libs/lvgl/src/lv_objx/lv_slider.h
   libs/lvgl/src/lv_objx/lv_slider.c
+  libs/lvgl/src/lv_objx/lv_chart.c
+  libs/lvgl/src/lv_objx/lv_chart.h
   )
 
 list(APPEND IMAGE_FILES
@@ -336,6 +338,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/ScreenList.cpp
   DisplayApp/Screens/Label.cpp
   DisplayApp/Screens/FirmwareUpdate.cpp
+  DisplayApp/Screens/Motion.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiNorFlash.cpp
@@ -360,6 +363,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/DfuService.cpp
   Components/Ble/CurrentTimeService.cpp
   Components/Ble/AlertNotificationService.cpp
+  Components/Motion/MotionController.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -416,6 +420,7 @@ set(INCLUDE_FILES
   DisplayApp/Screens/ScreenList.h
   DisplayApp/Screens/Label.h
   DisplayApp/Screens/FirmwareUpdate.h
+  DisplayApp/Screens/Motion.h
   drivers/St7789.h
   drivers/SpiNorFlash.h
   drivers/SpiMaster.h
@@ -439,6 +444,7 @@ set(INCLUDE_FILES
   Components/Ble/CurrentTimeClient.h
   Components/Ble/AlertNotificationClient.h
   Components/Ble/DfuService.h
+  Components/Motion/MotionController.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h

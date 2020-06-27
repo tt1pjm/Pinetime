@@ -90,7 +90,7 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t *data, size_t size) {
   twiMaster.Write(deviceAddress, registerAddress, data, size);
 }
 
-void Bma421::Process() {
+Bma421::Values Bma421::Process() {
   struct bma4_accel data;
   bma4_read_accel_xyz(&data, &bma);
 
@@ -115,5 +115,7 @@ void Bma421::Process() {
   bma423_activity_output(&activity, &bma);
   NRF_LOG_INFO("Activity : %d", activity);
   NRF_LOG_INFO("");
+
+  return {steps, data.x, data.y, data.z};
 }
 

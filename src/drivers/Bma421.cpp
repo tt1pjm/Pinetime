@@ -45,7 +45,6 @@ void Bma421::Init() {
   ASSERT(ret == BMA4_OK);
 
   ret = bma423_write_config_file(&bma);
-  NRF_LOG_INFO("RET  %d", ret);
   ASSERT(ret == BMA4_OK);
 
   ret = bma4_set_accel_enable(1, &bma);
@@ -94,27 +93,27 @@ Bma421::Values Bma421::Process() {
   struct bma4_accel data;
   bma4_read_accel_xyz(&data, &bma);
 
-  NRF_LOG_INFO("X/Y/Z : %d/%d/%d", data.x, data.y, data.z);
+  //NRF_LOG_INFO("X/Y/Z : %d/%d/%d", data.x, data.y, data.z);
 
 
   uint32_t steps = 0;
   bma423_step_counter_output(&steps, &bma);
-  NRF_LOG_INFO("Steps : %d", steps);
+  //NRF_LOG_INFO("Steps : %d", steps);
 
 
   int32_t temperature;
   bma4_get_temperature(&temperature, BMA4_DEG, &bma);
   temperature = temperature / 1000;
-  NRF_LOG_INFO("Temperature : %d", temperature);
+  //NRF_LOG_INFO("Temperature : %d", temperature);
 
   uint16_t intStatus = 0;
   bma423_read_int_status(&intStatus, &bma);
-  NRF_LOG_INFO("Interrupt status : %d", intStatus);
+  //NRF_LOG_INFO("Interrupt status : %d", intStatus);
 
   uint8_t activity = 0;
   bma423_activity_output(&activity, &bma);
-  NRF_LOG_INFO("Activity : %d", activity);
-  NRF_LOG_INFO("");
+  //NRF_LOG_INFO("Activity : %d", activity);
+  //NRF_LOG_INFO("");
 
   return {steps, data.x, data.y, data.z};
 }

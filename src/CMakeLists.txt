@@ -339,6 +339,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Label.cpp
   DisplayApp/Screens/FirmwareUpdate.cpp
   DisplayApp/Screens/Motion.cpp
+  DisplayApp/Screens/HeartRate.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiNorFlash.cpp
@@ -351,6 +352,8 @@ list(APPEND SOURCE_FILES
   drivers/Bma421.cpp
   drivers/Bma421_C/bma4.c
   drivers/Bma421_C/bma423.c
+  drivers/Hrs3300/hrs3300.c
+  drivers/Hrs3300/HRS3300lib.cpp
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/Ble/NotificationManager.cpp
@@ -364,6 +367,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/CurrentTimeService.cpp
   Components/Ble/AlertNotificationService.cpp
   Components/Motion/MotionController.cpp
+  Components/HeartRate/HeartRateController.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -421,6 +425,7 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Label.h
   DisplayApp/Screens/FirmwareUpdate.h
   DisplayApp/Screens/Motion.h
+  DisplayApp/Screens/HeartRate.h
   drivers/St7789.h
   drivers/SpiNorFlash.h
   drivers/SpiMaster.h
@@ -433,7 +438,10 @@ set(INCLUDE_FILES
   drivers/Bma421/bma4.h
   drivers/Bma421/bma4_defs.h
   drivers/Bma421/bma423.h
-  drivers/Bma421/Wire.h
+  drivers/Hrs3300/hrs3300.h
+  drivers/Hrs3300/hrs3300_reg_init.h
+  drivers/Hrs3300/HRS3300lib.h
+  drivers/Hrs3300.cpp drivers/Hrs3300.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/Ble/NotificationManager.h
@@ -444,6 +452,7 @@ set(INCLUDE_FILES
   Components/Ble/CurrentTimeClient.h
   Components/Ble/AlertNotificationClient.h
   Components/Ble/DfuService.h
+  Components/Motion/MotionController.h
   Components/Motion/MotionController.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
@@ -572,6 +581,7 @@ endif()
 set(EXECUTABLE_NAME "pinetime-app")
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_NAME} ${CMAKE_SOURCE_DIR}/src/drivers/Hrs3300/cortex-m4/libheart.a)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
@@ -600,6 +610,7 @@ set(EXECUTABLE_MCUBOOT_NAME "pinetime-mcuboot-app")
 set(EXECUTABLE_MCUBOOT_WITH_BOOTLOADER_NAME "pinetime-mcuboot-app-wth-bootloader")
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} ${CMAKE_SOURCE_DIR}/src/drivers/Hrs3300/cortex-m4/libheart.a)
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>

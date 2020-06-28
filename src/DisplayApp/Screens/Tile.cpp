@@ -16,7 +16,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {"Meter", "Motion", "Clock", "\n", "Soft\nversion", "App2", "Brightness", ""};
+static const char * btnm_map1[] = {"Hear\nrate", "Motion", "Clock", "\n", "Soft\nversion", "App2", "Brightness", ""};
 
 Tile::Tile(DisplayApp* app) : Screen(app) {
   modal.reset(new Modal(app));
@@ -114,7 +114,7 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
   if(event == LV_EVENT_VALUE_CHANGED) {
     switch(buttonId) {
       case 0:
-        tile->StartMeterApp();
+        tile->StartHeartRateApp();
         break;
       case 1:
         tile->StartMotionApp();
@@ -162,6 +162,11 @@ void Tile::StartBrightnessApp() {
 
 void Tile::StartMeterApp() {
   app->StartApp(DisplayApp::Apps::Meter);
+  running = false;
+}
+
+void Tile::StartHeartRateApp() {
+  app->StartApp(DisplayApp::Apps::HeartRate);
   running = false;
 }
 

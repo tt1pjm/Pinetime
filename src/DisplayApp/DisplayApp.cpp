@@ -18,6 +18,7 @@
 #include <Components/Ble/NotificationManager.h>
 #include <DisplayApp/Screens/FirmwareUpdate.h>
 #include <DisplayApp/Screens/Motion.h>
+#include <DisplayApp/Screens/HeartRate.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -27,7 +28,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
-                       Controllers::MotionController& motionController) :
+                       Controllers::MotionController& motionController,
+                       Controllers::HeartRateController& heartRateController) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -38,7 +40,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
         systemTask{systemTask},
         notificationManager{notificationManager},
-        motionController{motionController} {
+        motionController{motionController},
+        heartRateController{heartRateController}{
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
   modal.reset(new Screens::Modal(this));
@@ -190,6 +193,7 @@ void DisplayApp::RunningState() {
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
       case Apps::Motion: currentScreen.reset(new Screens::Motion(this, motionController)); break;
+      case Apps::HeartRate: currentScreen.reset(new Screens::HeartRate(this, heartRateController)); break;
     }
     nextApp = Apps::None;
   }

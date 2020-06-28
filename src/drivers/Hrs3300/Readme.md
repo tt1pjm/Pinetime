@@ -1,0 +1,1 @@
+HRS3300 library coming from https://github.com/atc1441/HRS3300-Arduino-Library.

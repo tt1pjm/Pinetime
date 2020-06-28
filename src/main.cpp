@@ -30,6 +30,8 @@
 #include <drivers/TwiMaster.h>
 #include <drivers/Bma421.h>
 #include <Components/Motion/MotionController.h>
+#include <drivers/Hrs3300.h>
+#include <Components/HeartRate/HeartRateController.h>
 
 
 #if NRF_LOG_ENABLED
@@ -51,6 +53,7 @@ static constexpr uint8_t pinTwiSda = 6;
 
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
+static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
 
 
 Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
@@ -77,6 +80,7 @@ Pinetime::Drivers::TwiMaster twiMaster{Pinetime::Drivers::TwiMaster::Modules::TW
                                                MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl}};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 Pinetime::Drivers::Bma421 motionSensor{twiMaster, motionSensorTwiAddress};
+Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
@@ -86,6 +90,7 @@ Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::DateTime dateTimeController;
 Pinetime::Controllers::MotionController motionController;
+Pinetime::Controllers::HeartRateController heartRateController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
@@ -240,7 +245,7 @@ int main(void) {
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
   systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash,
-          twiMaster, touchPanel, motionSensor, motionController,
+          twiMaster, touchPanel, motionSensor, motionController, heartRateSensor, heartRateController,
           lvgl, batteryController, bleController,
           dateTimeController, notificationManager));
   systemTask->Start();

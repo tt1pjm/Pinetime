@@ -19,6 +19,7 @@
 #include <DisplayApp/Screens/Modal.h>
 #include <Components/Ble/NotificationManager.h>
 #include <Components/Motion/MotionController.h>
+#include <Components/HeartRate/HeartRateController.h>
 #include "TouchEvents.h"
 
 
@@ -41,11 +42,12 @@ namespace Pinetime {
                    Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                    System::SystemTask &systemTask,
                    Pinetime::Controllers::NotificationManager& notificationManager,
-                   Controllers::MotionController& motionController);
+                   Controllers::MotionController& motionController,
+                   Controllers::HeartRateController& heartRateController);
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness, Motion};
+        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness, Motion, HeartRate};
         void StartApp(Apps app);
 
         void SetFullRefresh(FullRefreshDirections direction);
@@ -84,6 +86,7 @@ namespace Pinetime {
         std::unique_ptr<Screens::Modal> modal;
         Pinetime::Controllers::NotificationManager& notificationManager;
         Controllers::MotionController& motionController;
+        Controllers::HeartRateController& heartRateController;
     };
   }
 }

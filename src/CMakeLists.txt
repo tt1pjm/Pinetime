@@ -354,6 +354,7 @@ list(APPEND SOURCE_FILES
   drivers/Bma421_C/bma423.c
   drivers/Hrs3300/hrs3300.c
   drivers/Hrs3300/HRS3300lib.cpp
+  drivers/Hrs3300.cpp
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/Ble/NotificationManager.cpp
@@ -441,7 +442,7 @@ set(INCLUDE_FILES
   drivers/Hrs3300/hrs3300.h
   drivers/Hrs3300/hrs3300_reg_init.h
   drivers/Hrs3300/HRS3300lib.h
-  drivers/Hrs3300.cpp drivers/Hrs3300.h
+  drivers/Hrs3300.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/Ble/NotificationManager.h

@@ -241,5 +241,5 @@ void SystemTask::PushMessage(SystemTask::Messages msg) {
 void SystemTask::OnIdle() {
   if(doNotGoToSleep) return;
   NRF_LOG_INFO("Idle timeout -> Going to sleep")
-  //PushMessage(Messages::GoToSleep);
+  PushMessage(Messages::GoToSleep);
 }

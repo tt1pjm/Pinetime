@@ -11,7 +11,7 @@ HeartRateTask::HeartRateTask(Drivers::Hrs3300 &heartRateSensor) :
 }
 
 void HeartRateTask::Start() {
-  if (pdPASS != xTaskCreate(HeartRateTask::Process, "Heartrate", 256, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(HeartRateTask::Process, "Heartrate", 190, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 

@@ -40,9 +40,11 @@ HeartRate::HeartRate(Pinetime::Applications::DisplayApp *app, Controllers::Heart
   lv_label_set_style(label_status, LV_LABEL_STYLE_MAIN, labelStyle);
   lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
 
+  heartRateController.Start();
 }
 
 HeartRate::~HeartRate() {
+  heartRateController.Stop();
   lv_obj_clean(lv_scr_act());
 }
 

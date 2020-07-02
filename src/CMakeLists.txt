@@ -340,6 +340,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/FirmwareUpdate.cpp
   DisplayApp/Screens/Motion.cpp
   DisplayApp/Screens/HeartRate.cpp
+  HeartRateTask/HeartRateTask.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiNorFlash.cpp
@@ -427,6 +428,7 @@ set(INCLUDE_FILES
   DisplayApp/Screens/FirmwareUpdate.h
   DisplayApp/Screens/Motion.h
   DisplayApp/Screens/HeartRate.h
+  HeartRateTask/HeartRateTask.h
   drivers/St7789.h
   drivers/SpiNorFlash.h
   drivers/SpiMaster.h

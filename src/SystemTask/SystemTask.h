@@ -14,6 +14,7 @@
 #include <Components/Motion/MotionController.h>
 #include <drivers/Hrs3300.h>
 #include <Components/HeartRate/HeartRateController.h>
+#include <HeartRateTask/HeartRateTask.h>
 
 namespace Pinetime {
   namespace System {
@@ -27,7 +28,7 @@ namespace Pinetime {
                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                    Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
                    Drivers::Bma421& motionSensor, Controllers::MotionController& motionController,
-                   Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& heartRateController,
+                   Drivers::Hrs3300& heartRateSensor,
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
@@ -53,12 +54,12 @@ namespace Pinetime {
         Pinetime::Drivers::Bma421& motionSensor;
         Controllers::MotionController& motionController;
         Drivers::Hrs3300& heartRateSensor;
-        Controllers::HeartRateController& heartRateController;
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Controllers::Battery& batteryController;
         std::unique_ptr<Pinetime::Applications::DisplayApp> displayApp;
         Pinetime::Controllers::Ble& bleController;
         Pinetime::Controllers::DateTime& dateTimeController;
+        std::unique_ptr<Pinetime::HeartRateTask> heartRateTask;
         QueueHandle_t systemTaksMsgQueue;
         bool isSleeping = false;
         Pinetime::Drivers::Watchdog watchdog;

@@ -27,7 +27,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                        Drivers::TwiMaster& twiMaster,Drivers::Cst816S &touchPanel,
                        Drivers::Bma421& motionSensor, Controllers::MotionController& motionController,
-                       Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& heartRateController,
+                       Drivers::Hrs3300& heartRateSensor,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
@@ -35,7 +35,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel},
                        motionSensor{motionSensor}, motionController{motionController},
-                       heartRateSensor{heartRateSensor}, heartRateController{heartRateController},
+                       heartRateSensor{heartRateSensor},
                        lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
@@ -77,8 +77,12 @@ void SystemTask::Work() {
   twiMaster.Init();
   touchPanel.Init();
   motionSensor.Init();
-  heartRateSensor.Init();
+  heartRateSensor.Disable();
   batteryController.Init();
+
+  heartRateTask.reset(new Pinetime::HeartRateTask(heartRateSensor));
+  auto& heartRateController = heartRateTask->HeartRateController();
+  heartRateTask->Start();
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager, motionController, heartRateController));
@@ -123,7 +127,7 @@ void SystemTask::Work() {
 
   while(true) {
     uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 40)) {
+    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 1000)) {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
@@ -135,6 +139,7 @@ void SystemTask::Work() {
           NRF_LOG_INFO("[SystemTask] Going to sleep");
           xTimerStop(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
+          heartRateTask->PushMessage(Pinetime::HeartRateTask::Messages::GoToSleep);
           isSleeping = true;
           break;
         case Messages::OnNewTime:
@@ -186,12 +191,6 @@ void SystemTask::Work() {
     auto motionValues = motionSensor.Process();
     motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
 
-    auto hr = heartRateSensor.Process();
-    if(hr != 255) {
-      if(hr == 254) heartRateController.Update(Controllers::HeartRateController::States::NoTouch, 0);
-      else if(hr == 253) heartRateController.Update(Controllers::HeartRateController::States::NotEnoughData, 0);
-      else heartRateController.Update(Controllers::HeartRateController::States::Running, hr);
-    }
 
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
@@ -218,6 +217,7 @@ void SystemTask::GoToRunning() {
   PushMessage(Messages::GoToRunning);
   displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
   displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
+  heartRateTask->PushMessage(Pinetime::HeartRateTask::Messages::WakeUp);
 }
 
 void SystemTask::OnTouchEvent() {

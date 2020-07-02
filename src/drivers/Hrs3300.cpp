@@ -57,19 +57,11 @@ void Hrs3300::WriteRegister(uint8_t registerAddress, uint8_t buffer) {
 }
 
 void Hrs3300::Disable() {
+  Hrs3300_alg_close();
   Hrs3300_chip_disable();
 }
 
 uint8_t Hrs3300::Process() {
-
   auto heartRate = get_heart_rate();
-  /*
-   * 253 = not enough measurement, please wait
-   * 254 = no touch
-   * 255 = no value (a value comes out every 25 calls)
-   */
-  if(heartRate != 255)
-    NRF_LOG_INFO("Heart rate : %d", heartRate);
-
   return heartRate;
 }

@@ -31,7 +31,6 @@
 #include <drivers/Bma421.h>
 #include <Components/Motion/MotionController.h>
 #include <drivers/Hrs3300.h>
-#include <Components/HeartRate/HeartRateController.h>
 
 
 #if NRF_LOG_ENABLED
@@ -90,7 +89,6 @@ Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::DateTime dateTimeController;
 Pinetime::Controllers::MotionController motionController;
-Pinetime::Controllers::HeartRateController heartRateController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
@@ -245,7 +243,7 @@ int main(void) {
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
   systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash,
-          twiMaster, touchPanel, motionSensor, motionController, heartRateSensor, heartRateController,
+          twiMaster, touchPanel, motionSensor, motionController, heartRateSensor,
           lvgl, batteryController, bleController,
           dateTimeController, notificationManager));
   systemTask->Start();

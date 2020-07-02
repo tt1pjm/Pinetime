@@ -34,7 +34,7 @@ void Hrs3300::Init() {
   nrf_gpio_cfg_input(30, NRF_GPIO_PIN_NOPULL) ;
 
   Disable();
-  /*
+
   vTaskDelay(100);
   auto id = ReadRegister(0x00);
   NRF_LOG_INFO("HRS3300 chip ID : %d", id);
@@ -43,7 +43,7 @@ void Hrs3300::Init() {
   Hrs3300_chip_enable();
   Hrs3300_set_exinf(0, 0, 0, 0, 0, 0);
   Hrs3300_alg_open();
-   */
+
 }
 
 uint8_t Hrs3300::ReadRegister(uint8_t registerAddress) {

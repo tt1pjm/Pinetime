@@ -29,8 +29,10 @@ namespace Pinetime {
         private:
           Controllers::HeartRateController& heartRateController;
           lv_obj_t* label_hr;
-          lv_obj_t* label_dummy;
-          lv_style_t* labelBigStyle;
+          lv_obj_t* label_bpm;
+          lv_obj_t* label_status;
+          lv_style_t labelBigStyle;
+          lv_style_t* labelStyle;
 
           bool running = true;
 

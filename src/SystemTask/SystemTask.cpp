@@ -185,14 +185,14 @@ void SystemTask::Work() {
 
     auto motionValues = motionSensor.Process();
     motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
-/*
+
     auto hr = heartRateSensor.Process();
     if(hr != 255) {
       if(hr == 254) heartRateController.Update(Controllers::HeartRateController::States::NoTouch, 0);
       else if(hr == 253) heartRateController.Update(Controllers::HeartRateController::States::NotEnoughData, 0);
       else heartRateController.Update(Controllers::HeartRateController::States::Running, hr);
     }
-*/
+
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
     batteryController.Update();

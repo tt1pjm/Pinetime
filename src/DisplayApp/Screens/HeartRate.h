@@ -10,9 +10,6 @@
 #include <Components/Battery/BatteryController.h>
 #include <Components/Ble/BleController.h>
 #include <Components/HeartRate/HeartRateController.h>
-#include "../Fonts/lcdfont14.h"
-#include "../Fonts/lcdfont70.h"
-#include "../../Version.h"
 
 namespace Pinetime {
   namespace Applications {

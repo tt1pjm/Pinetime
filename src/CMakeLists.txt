@@ -377,7 +377,7 @@ list(APPEND SOURCE_FILES
   ${TINYCRYPT_SRC}
   ${NIMBLE_SRC}
   ${LVGL_SRC}
-  ${IMAGE_FILES}
+  #${IMAGE_FILES}
   ${SDK_SOURCE_FILES}
 
   DisplayApp/LittleVgl.cpp
@@ -470,6 +470,8 @@ set(INCLUDE_FILES
   libs/date/includes/date/tz_private.h
   DisplayApp/LittleVgl.h
   SystemTask/SystemTask.h
+  SystemTask/SystemMonitor.h
+  DisplayApp/Screens/Symbols.h
 )
 
 include_directories(
@@ -575,6 +577,8 @@ add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
 add_definitions(-DDEBUG_NRF_USER)
+add_definitions(-D__STACK_SIZE=8192)
+add_definitions(-D__HEAP_SIZE=8192)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")

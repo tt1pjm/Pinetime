@@ -1,3 +1,8 @@
+# Important notice
+This branch is not intended to be merge into the develop/master branch.
+
+It contains demo code for the heart rate sensor and accelerometer, but it is still quite buggy (for example: the accelerometer freezes during the init one in two times.
+
 # PineTime
 > The PineTime is a free and open source smartwatch capable of running custom-built open operating systems. Some of the notable features include a heart rate monitor, a week-long battery as well as a capacitive touch IPS display that is legible in direct sunlight. It is a fully community driven side-project, which means that it will ultimately be up to the developers and end-users to determine when they deem the PineTime ready to ship.
 

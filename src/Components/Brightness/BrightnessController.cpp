@@ -35,6 +35,41 @@ void BrightnessController::Set(BrightnessController::Levels level) {
       nrf_gpio_pin_set(pinLcdBacklight2);
       nrf_gpio_pin_set(pinLcdBacklight3);
       break;
+  //   case Levels::High:
+  //     nrf_gpio_pin_clear(pinLcdBacklight1);
+  //     nrf_gpio_pin_clear(pinLcdBacklight2);
+  //     nrf_gpio_pin_clear(pinLcdBacklight3);
+  //     break;
+  //   case Levels::HighMedium:
+  //     nrf_gpio_pin_set(pinLcdBacklight1);
+  //     nrf_gpio_pin_clear(pinLcdBacklight2);
+  //     nrf_gpio_pin_clear(pinLcdBacklight3);
+  //     break;
+  //   case Levels::MediumHigh:
+  //     nrf_gpio_pin_clear(pinLcdBacklight1);
+  //     nrf_gpio_pin_set(pinLcdBacklight2);
+  //     nrf_gpio_pin_clear(pinLcdBacklight3);
+  //     break;
+  //   case Levels::Medium:
+  //     nrf_gpio_pin_clear(pinLcdBacklight1);
+  //     nrf_gpio_pin_clear(pinLcdBacklight2);
+  //     nrf_gpio_pin_set(pinLcdBacklight3);
+  //     break;
+  //  case Levels::MediumLow:
+  //     nrf_gpio_pin_set(pinLcdBacklight1);
+  //     nrf_gpio_pin_clear(pinLcdBacklight2);
+  //     nrf_gpio_pin_set(pinLcdBacklight3);
+  //     break;
+  //   case Levels::LowMedium:
+  //     nrf_gpio_pin_clear(pinLcdBacklight1);
+  //     nrf_gpio_pin_set(pinLcdBacklight2);
+  //     nrf_gpio_pin_set(pinLcdBacklight3);
+  //     break;
+  //   case Levels::Low:
+  //     nrf_gpio_pin_set(pinLcdBacklight1);
+  //     nrf_gpio_pin_set(pinLcdBacklight2);
+  //     nrf_gpio_pin_set(pinLcdBacklight3);
+  //     break;
   }
 }
 
@@ -43,6 +78,12 @@ void BrightnessController::Lower() {
     case Levels::High: Set(Levels::Medium); break;
     case Levels::Medium: Set(Levels::Low); break;
     case Levels::Low: Set(Levels::Off); break;
+    // case Levels::High: Set(Levels::HighMedium); break;
+    // case Levels::HighMedium: Set(Levels::MediumHigh); break;
+    // case Levels::MediumHigh: Set(Levels::Medium); break;
+    // case Levels::Medium: Set(Levels::MediumLow); break;
+    // case Levels::MediumLow: Set(Levels::LowMedium); break;
+    // case Levels::LowMedium: Set(Levels::Low); break;
     default: break;
   }
 }
@@ -52,6 +93,12 @@ void BrightnessController::Higher() {
     case Levels::Off: Set(Levels::Low); break;
     case Levels::Low: Set(Levels::Medium); break;
     case Levels::Medium: Set(Levels::High); break;
+    // case Levels::Low: Set(Levels::LowMedium); break;
+    // case Levels::LowMedium: Set(Levels::MediumLow); break;
+    // case Levels::MediumLow: Set(Levels::Medium); break;
+    // case Levels::Medium: Set(Levels::MediumHigh); break;
+    // case Levels::MediumHigh: Set(Levels::HighMedium); break;
+    // case Levels::HighMedium: Set(Levels::High); break;
     default: break;
   }
 }

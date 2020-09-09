@@ -10,7 +10,8 @@ typedef enum {
   DebugPin0 = 27,
   DebugPin1 = 29,
   DebugPin2 = 20,
-  DebugPin3 = 17,
+  // DebugPin3 = 17,
+  DebugPin3 = 15,
   DebugPin4 = 11,
 } debugpins_pins;
 

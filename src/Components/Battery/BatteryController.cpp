@@ -7,7 +7,7 @@ using namespace Pinetime::Controllers;
 
 void Battery::Init() {
   nrf_gpio_cfg_input(chargingPin, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
-  nrf_gpio_cfg_input(powerPresentPin, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
+//   nrf_gpio_cfg_input(powerPresentPin, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
 
   nrfx_saadc_config_t adcConfig = NRFX_SAADC_DEFAULT_CONFIG;
   nrfx_saadc_init(&adcConfig, SaadcEventHandler);
@@ -27,7 +27,7 @@ void Battery::Init() {
 
 void Battery::Update() {
   isCharging = !nrf_gpio_pin_read(chargingPin);
-  isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
+//   isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
 
   nrf_saadc_value_t value = 0;
   nrfx_saadc_sample_convert(0, &value);

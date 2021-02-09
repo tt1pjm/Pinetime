@@ -1,5 +1,8 @@
 
 # PineTime
+
+![Build PineTime Firmware](https://github.com/JF002/Pinetime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)
+
 > The PineTime is a free and open source smartwatch capable of running custom-built open operating systems. Some of the notable features include a heart rate monitor, a week-long battery as well as a capacitive touch IPS display that is legible in direct sunlight. It is a fully community driven side-project, which means that it will ultimately be up to the developers and end-users to determine when they deem the PineTime ready to ship.
 
 > We envision the PineTime as a companion for not only your PinePhone but also for your favorite devices — any phone, tablet, or even PC.
@@ -31,27 +34,35 @@ As of now, here is the list of achievements of this project:
  - Time synchronization via BLE
  - Notification via BLE
  - Multiple 'apps' : 
-    * Clock (displays the date, time, battery level, BLE connection status, heart rate and step count)
-    * Heart rate
-    * Motion
-    * System info (displays various info : BLE MAC, build date/time, uptime, version, ...)
-    * Brightness (allows the user to configure the brightness of the display)
+    * Clock (displays the date, time, battery level, ble connection status, heart rate)
+    * System info (displays various info : BLE MAC, build date/time, uptime, version,...)
+    * Brightess (allows the user to configure the brightness of the display)
+    * Music (control the playback of the music on your phone)
+    * Heart rate (controls the heart rate sensor and display current heartbeat)
+    * Navigation (displays navigation instructions coming from the companion app)
+    * Notification (displays the last notification received)
+    * Paddle (single player pong-like game)
+    * Two (2048 clone game)
  - Supported by 2 companion apps (development is in progress):
-    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf) (on Android)
-    * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS)
+    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
+    * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
  - **[Experimental]** OTA (Over-the-air) update via BLE
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  
 ## Documentation
 
+### Getting started
+ - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/gettingStarted.md)
+
 ### Develop
- - [Generate the fonts and symbols](src/DisplayApp/Fonts/Readme.md)
+ - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
 
 ### Build, flash and debug
  - [Project branches](doc/branches.md)
  - [Versioning](doc/versioning.md)
  - [Files included in the release notes](doc/filesInReleaseNotes.md)
  - [Build the project](doc/buildAndProgram.md)
+ - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
  - [Build the project with Docker](doc/buildWithDocker.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
  - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
@@ -68,9 +79,9 @@ As of now, here is the list of achievements of this project:
  - [Memory analysis](./doc/MemoryAnalysis.md)
  
 ### Using the firmware
- - [Integration with Gadgetbridge](doc/CompanionApps/Gadgetbridge.md)
- - [Integration with AmazFish](doc/CompanionApps/Amazfish.md)
- - [Firmware update, OTA](doc/CompanionApps/NrfconnectOTA.md)
+ - [Integration with Gadgetbridge](doc/companionapps/Gadgetbridge.md)
+ - [Integration with AmazFish](doc/companionapps/Amazfish.md)
+ - [Firmware update, OTA](doc/companionapps/NrfconnectOTA.md)
  
     
 ## TODO - contribute

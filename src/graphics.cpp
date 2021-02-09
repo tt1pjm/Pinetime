@@ -11,15 +11,15 @@
 #include <libraries/gpiote/app_gpiote.h>
 #include <hal/nrf_wdt.h>
 #include <cstring>
-#include <Components/Gfx/Gfx.h>
+#include <components/gfx/Gfx.h>
 #include <drivers/St7789.h>
-#include <Components/Brightness/BrightnessController.h>
+#include <components/brightness/BrightnessController.h>
 
 #if NRF_LOG_ENABLED
-#include "Logging/NrfLogger.h"
+#include "logging/NrfLogger.h"
 Pinetime::Logging::NrfLogger logger;
 #else
-#include "Logging/DummyLogger.h"
+#include "logging/DummyLogger.h"
 Pinetime::Logging::DummyLogger logger;
 #endif
 
@@ -79,6 +79,7 @@ void Process(void* instance) {
   NRF_LOG_INFO("Init...");
   spi.Init();
   spiNorFlash.Init();
+  spiNorFlash.Wakeup();
   brightnessController.Init();
   lcd.Init();
   gfx.Init();

@@ -1,38 +1,51 @@
-#include <FreeRTOS.h>
-#include <task.h>
-#include <legacy/nrf_drv_clock.h>
-#include <libraries/timer/app_timer.h>
-#include <libraries/gpiote/app_gpiote.h>
-#include <DisplayApp/DisplayApp.h>
-#include <softdevice/common/nrf_sdh.h>
+// nrf
 #include <hal/nrf_rtc.h>
-#include <timers.h>
-#include <Components/DateTime/DateTimeController.h>
-#include "Components/Battery/BatteryController.h"
-#include "Components/Ble/BleController.h"
-#include <drivers/St7789.h>
-#include <drivers/SpiMaster.h>
-#include <drivers/Spi.h>
-#include <DisplayApp/LittleVgl.h>
-#include <SystemTask/SystemTask.h>
-#include <Components/Ble/NotificationManager.h>
+#include <hal/nrf_wdt.h>
+#include <legacy/nrf_drv_clock.h>
+#include <libraries/gpiote/app_gpiote.h>
+#include <libraries/timer/app_timer.h>
+#include <softdevice/common/nrf_sdh.h>
+
+// nimble
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
+#include <controller/ble_ll.h>
+#include <host/ble_hs.h>
+#include <host/util/util.h>
+#include <nimble/nimble_port.h>
 #include <nimble/nimble_port_freertos.h>
 #include <nimble/npl_freertos.h>
-#include <nimble/nimble_port.h>
-#include <host/ble_hs.h>
-#include <controller/ble_ll.h>
 #include <os/os_cputime.h>
-#include <transport/ram/ble_hci_ram.h>
-#include <hal/nrf_wdt.h>
-#include <host/util/util.h>
 #include <services/gap/ble_svc_gap.h>
+#include <transport/ram/ble_hci_ram.h>
+#undef max
+#undef min
 
+// FreeRTOS
+#include <FreeRTOS.h>
+#include <task.h>
+#include <timers.h>
+#include <drivers/Hrs3300.h>
+
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/datetime/DateTimeController.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/LittleVgl.h"
+#include "drivers/Spi.h"
+#include "drivers/SpiMaster.h"
+#include "drivers/SpiNorFlash.h"
+#include "drivers/St7789.h"
+#include "drivers/TwiMaster.h"
+#include "drivers/Cst816s.h"
+#include "systemtask/SystemTask.h"
 
 #if NRF_LOG_ENABLED
-#include "Logging/NrfLogger.h"
+#include "logging/NrfLogger.h"
 Pinetime::Logging::NrfLogger logger;
 #else
-#include "Logging/DummyLogger.h"
+#include "logging/DummyLogger.h"
 Pinetime::Logging::DummyLogger logger;
 #endif
 
@@ -45,6 +58,7 @@ static constexpr uint8_t pinLcdDataCommand = 18;
 static constexpr uint8_t pinTwiScl = 7;
 static constexpr uint8_t pinTwiSda = 6;
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
+static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
 
 Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
         Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
@@ -71,6 +85,8 @@ Pinetime::Drivers::TwiMaster twiMaster{Pinetime::Drivers::TwiMaster::Modules::TW
                                                MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl}};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
+
+Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
 
 TimerHandle_t debounceTimer;
@@ -216,7 +232,7 @@ void nimble_port_ll_task_func(void *args) {
   ble_ll_task(args);
 }
 }
-
+int countT2 = 0;
 int main(void) {
   logger.Init();
 
@@ -225,7 +241,7 @@ int main(void) {
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
   systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
-                                                    dateTimeController, notificationManager));
+                                                    dateTimeController, notificationManager, heartRateSensor));
   systemTask->Start();
   nimble_port_init();
 

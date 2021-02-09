@@ -1,8 +1,9 @@
-#include <FreeRTOS.h>
-#include <task.h>
-#include <nrfx_log.h>
-#include <legacy/nrf_drv_gpiote.h>
 #include "Cst816s.h"
+#include <FreeRTOS.h>
+#include <legacy/nrf_drv_gpiote.h>
+#include <nrfx_log.h>
+#include <task.h>
+
 using namespace Pinetime::Drivers;
 
 /* References :
@@ -37,7 +38,9 @@ void Cst816S::Init() {
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
-  twiMaster.Read(twiAddress, 0, touchData, 63);
+  auto ret = twiMaster.Read(twiAddress, 0, touchData, 63);
+  if(ret != TwiMaster::ErrorCodes::NoError) return {};
+
   auto nbTouchPoints = touchData[2] & 0x0f;
 
 //  uint8_t i = 0;

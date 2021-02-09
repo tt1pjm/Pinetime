@@ -18,7 +18,7 @@ This firmware is standalone, meaning that it does not need a bootloader to actua
 **This firmware must be flashed at address 0x00 in the main flash memory**
 
 ### Bootloader
-The bootloader  is maintained by [lupyuen](https://github.com/lupyuen) and is a binary version of [this release](https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v4.1.7).
+The bootloader  is maintained by [lupyuen](https://github.com/lupyuen) and is a binary version of [this release](https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v5.0.4).
 
  - **bootloader.hex** : Firmware in Intel HEX file format.
  
@@ -42,7 +42,7 @@ This firmware is intended to be used with our [MCUBoot-based bootloader](../boot
 
 The following files are not directly usable by the bootloader:
 
- - **pinetime-mcuboot-app.bin** : Output file of GCC containing debug symbols, useful is you want to debug the firmware using GDB.
+ - **pinetime-mcuboot-app.out** : Output file of GCC containing debug symbols, useful is you want to debug the firmware using GDB.
  - **pinetime-mcuboot-app.hex** : Firmware in Intel HEX file format. 
  - **pinetime-mcuboot-app.bin** : Firmware in binary format. 
  - **pinetime-mcuboot-app.map** : Map file containing all the symbols, addresses in memory,...

@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cstdint>
 
 namespace Pinetime {
   namespace Drivers {
@@ -57,7 +58,7 @@ namespace Pinetime {
           ColumnAddressSet = 0x2a,
           RowAddressSet = 0x2b,
           WriteToRam = 0x2c,
-          MemoryDataAccessControl = 036,
+          MemoryDataAccessControl = 0x36,
           VerticalScrollDefinition = 0x33,
           VerticalScrollStartAddress = 0x37,
           ColMod = 0x3a,

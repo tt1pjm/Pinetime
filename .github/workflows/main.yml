@@ -9,13 +9,13 @@ name: Build PineTime Firmware
 # When to run this Workflow...
 on:
 
-  # Run this Workflow when files are updated (Pushed) in the "dev" Branch
+  # Run this Workflow when files are updated (Pushed) in the "develop" Branch
   push:
-    branches: [ dev ]
+    branches: [ develop ]
 
-  # Also run this Workflow when a Pull Request is created or updated in the "dev" Branch
+  # Also run this Workflow when a Pull Request is created or updated in the "develop" Branch
   pull_request:
-    branches: [ dev ]
+    branches: [ develop ]
 
 # Steps to run for the Workflow
 jobs:

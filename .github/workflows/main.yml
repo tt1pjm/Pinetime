@@ -87,6 +87,7 @@ jobs:
 
       - name: Install imgtool dependencies
         run:  |
+          python -m pip install -U pip
           pip3 install --user setuptools
           pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
 

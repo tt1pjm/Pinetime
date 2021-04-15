@@ -86,7 +86,7 @@ jobs:
           git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
 
       - name: Install imgtool dependencies
-        run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+        run:  pip3 install --user -r ${{ runner.temp }}/tools/mcuboot/scripts/requirements.txt
 
       - name: Install adafruit-nrfutil
         run:  |

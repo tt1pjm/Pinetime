@@ -126,7 +126,8 @@ jobs:
 
       - name: Make pinetime-mcuboot-app
         run:  |
-          pip3 install --user -r ../tools/mcuboot/requirements.txt
+          pwd
+          pip3 install --user -r tools/mcuboot/requirements.txt
           cd build
           make pinetime-mcuboot-app
 

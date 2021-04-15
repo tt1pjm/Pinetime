@@ -26,14 +26,14 @@
 #include <task.h>
 #include <timers.h>
 #include <drivers/Hrs3300.h>
+#include <drivers/Bma421.h>
 
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
-#include "displayapp/DisplayApp.h"
-#include "displayapp/LittleVgl.h"
+#include "components/settings/Settings.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -50,6 +50,8 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
+#include <memory>
+
 static constexpr uint8_t pinSpiSck = 2;
 static constexpr uint8_t pinSpiMosi = 3;
 static constexpr uint8_t pinSpiMiso = 4;
@@ -59,6 +61,7 @@ static constexpr uint8_t pinLcdDataCommand = 18;
 static constexpr uint8_t pinTwiScl = 7;
 static constexpr uint8_t pinTwiSda = 6;
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
+static constexpr uint8_t motionSensorTwiAddress = 0x18;
 static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
 
 Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
@@ -85,21 +88,33 @@ Pinetime::Drivers::TwiMaster twiMaster{Pinetime::Drivers::TwiMaster::Modules::TW
                                        Pinetime::Drivers::TwiMaster::Parameters {
                                                MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl}};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
+#ifdef PINETIME_IS_RECOVERY
+static constexpr bool isFactory = true;
+#include "displayapp/DummyLittleVgl.h"
+#include "displayapp/DisplayAppRecovery.h"
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
+#else
+static constexpr bool isFactory = false;
+#include "displayapp/LittleVgl.h"
+#include "displayapp/DisplayApp.h"
+Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
+#endif
 
+Pinetime::Drivers::Bma421 motionSensor{twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
 
 TimerHandle_t debounceTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
-Pinetime::Controllers::DateTime dateTimeController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
-Pinetime::Controllers::MotorController motorController;
+Pinetime::Controllers::Settings settingsController{spiNorFlash};
+
+Pinetime::Controllers::MotorController motorController{settingsController};
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {
@@ -114,7 +129,8 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
 
 extern "C" {
   void vApplicationIdleHook(void) {
-    lv_tick_inc(1);
+    if(!isFactory)
+      lv_tick_inc(1);
   }
 }
 
@@ -241,8 +257,8 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
-                                                    dateTimeController, motorController, heartRateSensor));
+  systemTask = std::make_unique<Pinetime::System::SystemTask>(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
+                                                    motorController, heartRateSensor, motionSensor, settingsController);
   systemTask->Start();
   nimble_port_init();
 

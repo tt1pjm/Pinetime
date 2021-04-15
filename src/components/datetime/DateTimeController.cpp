@@ -1,8 +1,13 @@
 #include "DateTimeController.h"
 #include <date/date.h>
 #include <libraries/log/nrf_log.h>
+#include <systemtask/SystemTask.h>
 
 using namespace Pinetime::Controllers;
+
+DateTime::DateTime(System::SystemTask& systemTask) : systemTask{systemTask} {
+
+}
 
 
 void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute,
@@ -62,5 +67,133 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   hour = time.hours().count();
   minute = time.minutes().count();
   second = time.seconds().count();
+
+  // Notify new day to SystemTask
+  if(hour == 0 and not isMidnightAlreadyNotified) {
+    isMidnightAlreadyNotified = true;
+    systemTask.PushMessage(System::SystemTask::Messages::OnNewDay);
+  } else if (hour != 0) {
+    isMidnightAlreadyNotified = false;
+  }
 }
 
+const char *DateTime::MonthShortToString() {
+  return DateTime::MonthsString[(uint8_t)month];
+}
+
+const char *DateTime::MonthShortToStringLow() {
+  return DateTime::MonthsStringLow[(uint8_t)month];
+}
+
+const char *DateTime::MonthsToStringLow() {
+  return DateTime::MonthsLow[(uint8_t)month];
+}
+
+const char *DateTime::DayOfWeekToString() {
+  return DateTime::DaysString[(uint8_t)dayOfWeek];
+}
+
+const char *DateTime::DayOfWeekShortToString() {
+  return DateTime::DaysStringShort[(uint8_t)dayOfWeek];
+}
+
+const char *DateTime::DayOfWeekToStringLow() {
+  return DateTime::DaysStringLow[(uint8_t)dayOfWeek];
+}
+
+const char *DateTime::DayOfWeekShortToStringLow() {
+  return DateTime::DaysStringShortLow[(uint8_t)dayOfWeek];
+}
+
+
+char const *DateTime::DaysStringLow[] = {
+        "--",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+};
+
+char const *DateTime::DaysStringShortLow[] = {
+        "--",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+};
+
+char const *DateTime::DaysStringShort[] = {
+        "--",
+        "MON",
+        "TUE",
+        "WED",
+        "THU",
+        "FRI",
+        "SAT",
+        "SUN"
+};
+
+char const *DateTime::DaysString[] = {
+        "--",
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+        "SATURDAY",
+        "SUNDAY"
+};
+
+char const *DateTime::MonthsString[] = {
+        "--",
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC"
+};
+
+char const *DateTime::MonthsStringLow[] = {
+        "--",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+};
+
+char const *DateTime::MonthsLow[] = {
+        "--",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+};

@@ -61,19 +61,6 @@ namespace Pinetime {
         return isPowerPresent;
       }
 
-    private:
-      static Battery* instance;
-      nrf_saadc_value_t saadc_value;
-
-      static constexpr uint8_t percentRemainingSamples = 5;
-      CircBuffer<percentRemainingSamples> percentRemainingBuffer {};
-
-      static constexpr uint32_t chargingPin = 12;
-      static constexpr uint32_t powerPresentPin = 19;
-      static constexpr nrf_saadc_input_t batteryVoltageAdcInput = NRF_SAADC_INPUT_AIN7;
-      float voltage = 0.0f;
-      int percentRemaining = -1;
-
       private:
         static Battery *instance;
         nrf_saadc_value_t  saadc_value;

@@ -74,13 +74,23 @@ namespace Pinetime {
       float voltage = 0.0f;
       int percentRemaining = -1;
 
-      bool isCharging = false;
-      bool isPowerPresent = false;
+      private:
+        static Battery *instance;
+        nrf_saadc_value_t  saadc_value;
+        
+        static constexpr uint8_t percentRemainingSamples = 10;
+        CircBuffer<percentRemainingSamples> percentRemainingBuffer {};
+      
+        static constexpr uint32_t chargingPin = 19; // pinetime 12
+        static constexpr uint32_t powerPresentPin = 19;
+        static constexpr nrf_saadc_input_t batteryVoltageAdcInput = NRF_SAADC_INPUT_AIN7;
+        float voltage = 0.0f;
+        int percentRemaining = -1;
 
-      void SaadcInit();
+        bool isCharging = false;
+        bool isPowerPresent = false;
 
-      void SaadcEventHandler(nrfx_saadc_evt_t const* p_event);
-      static void adcCallbackStatic(nrfx_saadc_evt_t const* event);
+        void SaadcInit();
 
       bool isReading = false;
       uint8_t samples = 0;

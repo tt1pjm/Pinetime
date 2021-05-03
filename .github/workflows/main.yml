@@ -9,13 +9,13 @@ name: Build PineTime Firmware
 # When to run this Workflow...
 on:
 
-  # Run this Workflow when files are updated (Pushed) in the "master" Branch
+  # Run this Workflow when files are updated (Pushed) in the "develop" Branch
   push:
-    branches: [ master ]
+    branches: [ develop ]
 
-  # Also run this Workflow when a Pull Request is created or updated in the "master" Branch
+  # Also run this Workflow when a Pull Request is created or updated in the "develop" Branch
   pull_request:
-    branches: [ master ]
+    branches: [ develop ]
 
 # Steps to run for the Workflow
 jobs:
@@ -36,7 +36,7 @@ jobs:
         id:   cache-toolchain
         uses: actions/cache@v2
         env:
-          cache-name: cache-toolchain-9-2020-q2
+          cache-name: cache-toolchain-9-2019-q4
         with:
           path: ${{ runner.temp }}/arm-none-eabi
           key:  ${{ runner.os }}-build-${{ env.cache-name }}
@@ -44,10 +44,10 @@ jobs:
 
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@v1.0.2
+        uses: fiam/arm-none-eabi-gcc@162d71c10065d706b8a07a2f27d7628cad82e4e3
         with:
           # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
-          release: 9-2020-q2
+          release: 9-2019-q4
           # Directory to unpack GCC to. Defaults to a temporary directory.
           directory: ${{ runner.temp }}/arm-none-eabi
 
@@ -86,12 +86,14 @@ jobs:
           git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
 
       - name: Install imgtool dependencies
-        run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+        run:  |
+          pip3 install --upgrade pip
+          pip3 install --user setuptools
+          pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
 
       - name: Install adafruit-nrfutil
         run:  |
           pip3 install --user wheel
-          pip3 install --user setuptools
           pip3 install --user adafruit-nrfutil
 
         #########################################################################################
@@ -99,6 +101,8 @@ jobs:
 
       - name: Checkout source files
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Show files
         run:  set ; pwd ; ls -l
@@ -122,6 +126,8 @@ jobs:
 
       - name: Make pinetime-mcuboot-app
         run:  |
+          pwd
+          pip3 install --user -r tools/mcuboot/requirements.txt
           cd build
           make pinetime-mcuboot-app
 
@@ -129,6 +135,7 @@ jobs:
         run:  |
           # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
           ls -l build/src/pinetime-mcuboot-app*.bin
+          mv build/src/pinetime-mcuboot-app-image*.bin build/src/pinetime-mcuboot-image.bin
           ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
           ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
 

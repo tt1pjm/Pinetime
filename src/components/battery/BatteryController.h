@@ -78,6 +78,9 @@ namespace Pinetime {
         bool isPowerPresent = false;
 
         void SaadcInit();
+      
+        void SaadcEventHandler(nrfx_saadc_evt_t const* p_event);
+        static void adcCallbackStatic(nrfx_saadc_evt_t const* event);
 
       bool isReading = false;
       uint8_t samples = 0;

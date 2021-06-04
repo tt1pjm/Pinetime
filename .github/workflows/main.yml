@@ -36,7 +36,7 @@ jobs:
         id:   cache-toolchain
         uses: actions/cache@v2
         env:
-          cache-name: cache-toolchain-9-2019-q4
+          cache-name: cache-toolchain-9-2020-q2
         with:
           path: ${{ runner.temp }}/arm-none-eabi
           key:  ${{ runner.os }}-build-${{ env.cache-name }}
@@ -44,12 +44,15 @@ jobs:
 
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@162d71c10065d706b8a07a2f27d7628cad82e4e3
+        uses: fiam/arm-none-eabi-gcc@v1.0.2
         with:
-          # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
-          release: 9-2019-q4
+          # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2020-q2")
+          release: 9-2020-q2
           # Directory to unpack GCC to. Defaults to a temporary directory.
           directory: ${{ runner.temp }}/arm-none-eabi
+        env:
+          # needed for set-env (https://github.com/actions/toolkit/issues/641)
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
       - name: Check cache for nRF5 SDK
         id:   cache-nrf5sdk
@@ -83,17 +86,21 @@ jobs:
         if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
         run:  |
           cd ${{ runner.temp }}
-          git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+          git clone --branch v1.5.0 https://github.com/mcu-tools/mcuboot
 
       - name: Install imgtool dependencies
         run:  |
-          pip3 install --upgrade pip
-          pip3 install --user setuptools
           pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+
+      # cbor is a dependency that is not currently included in mcuboot requirements.txt
+      - name: Install imgtool dependencies (cbor)
+        run:  |
+          pip3 install --user cbor
 
       - name: Install adafruit-nrfutil
         run:  |
           pip3 install --user wheel
+          pip3 install --user setuptools
           pip3 install --user adafruit-nrfutil
 
         #########################################################################################
@@ -135,8 +142,12 @@ jobs:
         run:  |
           # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
           ls -l build/src/pinetime-mcuboot-app*.bin
+          IMGTOOL_INPUT_ARGUMENT=$( ls build/src | grep "pinetime-mcuboot-app-[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.bin" )
+          echo ""
+          echo -e "\u001b[32m ${IMGTOOL_INPUT_ARGUMENT} \u001b[0m"
+          echo ""
           mv build/src/pinetime-mcuboot-app-image*.bin build/src/pinetime-mcuboot-image.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
+          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/${IMGTOOL_INPUT_ARGUMENT} build/src/pinetime-mcuboot-app-img.bin
           ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
 
       - name: Create DFU package
